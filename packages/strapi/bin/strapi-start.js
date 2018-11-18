@@ -80,8 +80,13 @@ module.exports = function(appPath = '') {
           }
 
           const filePath = `${src}/${file}`;
-          if (fs.statSync(filePath).isDirectory()) setFilesToWatch(filePath);
-          else fs.watchFile(filePath, () => restart(filePath));
+          if (fs.statSync(filePath).isDirectory()) {
+            setFilesToWatch(filePath);
+            fs.watch(filePath, eventType => eventType == "rename" && restart(filePath));
+          }
+          else {
+            fs.watchFile(filePath, () => restart(filePath));
+          }
         });
       };
 
